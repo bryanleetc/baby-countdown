@@ -1,12 +1,12 @@
 <script>
   const dictionary = {
     startButtonText: {
-      running_true: 'Pause',
+      running_true: 'Stop',
       running_false: 'Start'
     }
   }
-  const defaultMins = 0;
-  const defaultSecs = 5;
+  const defaultMins = 1;
+  const defaultSecs = 0;
   let defaultTimeSet = calculateTimeInSeconds(defaultMins, defaultSecs);
 
   export let props = {
@@ -17,12 +17,18 @@
     timeSet: defaultTimeSet,
     timeRemaining: defaultTimeSet,
     shapeWidth: 300,
+    globalTimer: {},
   };
 
   function startClick() {
     props.timerRunning = !props.timerRunning;
-    props.timeSet = calculateTimeInSeconds(props.mins, props.secs);
-    timerStart();
+
+    if (props.timerRunning) {
+      props.timeSet = calculateTimeInSeconds(props.mins, props.secs);
+      timerStart();
+    } else {
+      timerStop();
+    }
 
     let dictionaryKey = `running_${props.timerRunning}`
     props.startButtonText = dictionary.startButtonText[dictionaryKey];
@@ -44,6 +50,12 @@
         clearInterval(intervalId)
       }
     }, 1000);
+
+    props.globalTimer = intervalId;
+  }
+
+  function timerStop() {
+    clearInterval(props.globalTimer);
   }
 
   function calculateTimeInSeconds(mins, secs) {
@@ -72,11 +84,11 @@
 </div>
 
 <div>
-  <label>Minutes</label>
+  <label for="minutes">Minutes</label>
   <input type="number" name="minutes" placeholder="Minutes" bind:value={props.mins} />
 </div>
 <div>
-  <label>Seconds</label>
+  <label for="seconds">Seconds</label>
   <input type="number" name="seconds" placeholder="Seconds" bind:value={props.secs} />
 </div>
 <div>
